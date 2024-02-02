@@ -104,7 +104,6 @@ void sendmsg(String topic, String payload) {
   helper.mqtt_publish(psclient, topic, payload);
 }
 
-
 /****************************************************************************************
 */
 void processMsg(String res, uint8_t clientnum){
@@ -158,8 +157,9 @@ void processMsg(String res, uint8_t clientnum){
     //Send position details to client
     int set = (setPos * 100)/maxPosition;
     int pos = (currentPosition * 100)/maxPosition;
-    sendmsg(outputTopic, "{ \"set\":"+String(set)+", \"position\":"+String(pos)+" }");
-    webSocket.sendTXT(clientnum, "{ \"set\":"+String(set)+", \"position\":"+String(pos)+" }");
+    String message = "{ \"set\":"+String(set)+", \"position\":"+String(pos)+" }";
+    sendmsg(outputTopic, message);
+    webSocket.sendTXT(clientnum, message);
   } else if (res == "(ping)") {
     //Do nothing
   } else {
@@ -175,9 +175,10 @@ void processMsg(String res, uint8_t clientnum){
     int set = (setPos * 100)/maxPosition;
     int pos = (currentPosition * 100)/maxPosition;
 
+    String message = "{ \"set\":"+String(set)+", \"position\":"+String(pos)+" }";
     //Send the instruction to all connected devices
-    sendmsg(outputTopic, "{ \"set\":"+String(set)+", \"position\":"+String(pos)+" }");
-    webSocket.broadcastTXT("{ \"set\":"+String(set)+", \"position\":"+String(pos)+" }");
+    sendmsg(outputTopic, message);
+    webSocket.broadcastTXT(message);
   }
 }
 
@@ -452,8 +453,9 @@ void loop(void)
       action = "";
       int set = (setPos * 100)/maxPosition;
       int pos = (currentPosition * 100)/maxPosition;
-      webSocket.broadcastTXT("{ \"set\":"+String(set)+", \"position\":"+String(pos)+" }");
-      sendmsg(outputTopic, "{ \"set\":"+String(set)+", \"position\":"+String(pos)+" }");
+      String message = "{ \"set\":"+String(set)+", \"position\":"+String(pos)+" }";
+      webSocket.broadcastTXT(message);
+      sendmsg(outputTopic, message);
       Serial.println("Stopped. Reached wanted position");
       saveItNow = true;
     }
